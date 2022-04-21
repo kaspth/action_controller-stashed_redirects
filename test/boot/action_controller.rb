@@ -13,5 +13,10 @@ class SessionsController < ApplicationController
   end
 end
 
-class UsersController < ApplicationController
+module Sessions
+  class RedirectsController < ApplicationController
+    def create
+      redirect_from_stashed :sign_in
+    end
+  end
 end

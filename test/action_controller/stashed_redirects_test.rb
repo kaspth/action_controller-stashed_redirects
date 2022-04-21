@@ -18,4 +18,12 @@ class ActionController::StashedRedirectsTest < ActionDispatch::IntegrationTest
     post sessions_url
     assert_redirected_to users_url
   end
+
+  test "cross-controller communication with shared purpose" do
+    get new_session_url, params: { redirect_url: users_url }
+    assert_response :no_content
+
+    post redirects_session_url
+    assert_redirected_to users_url
+  end
 end

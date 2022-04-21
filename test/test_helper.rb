@@ -23,7 +23,12 @@ end
 Rails.application.initialize!
 
 Rails.application.routes.draw do
-  resources :sessions, :users
+  resources :sessions
+  namespace :sessions do
+    resources :redirects
+  end
+
+  resources :users
 end
 
 require_relative "boot/action_controller"
