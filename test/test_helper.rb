@@ -2,6 +2,8 @@
 
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 
+require "debug"
+
 require "action_controller"
 require "action_controller/stashed_redirects"
 
