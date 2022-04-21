@@ -71,3 +71,5 @@ module ActionController::StashedRedirects
       { param: params[:redirect_url], referer: request.get? && request.referer }.values_at(*from).find(&:present?) || from
     end
 end
+
+ActiveSupport.on_load(:action_controller) { include ActionController::StashedRedirects }

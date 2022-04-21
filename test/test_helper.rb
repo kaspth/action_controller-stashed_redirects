@@ -8,3 +8,5 @@ require "action_controller/stashed_redirects"
 require "action_dispatch/testing/integration"
 
 require "minitest/autorun"
+
+require_relative "boot/action_controller"
