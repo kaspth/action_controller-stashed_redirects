@@ -8,7 +8,7 @@ require "rails/test_help"
 require "action_controller/stashed_redirects"
 require "minitest/autorun"
 
-require_relative "boot/action_controller"
+require "action_controller/railtie"
 
 ENV["RAILS_ENV"] = "test"
 
@@ -25,3 +25,5 @@ Rails.application.initialize!
 Rails.application.routes.draw do
   resources :sessions, :users
 end
+
+require_relative "boot/action_controller"
