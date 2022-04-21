@@ -23,7 +23,7 @@ class ActionController::StashedRedirectsTest < ActionDispatch::IntegrationTest
     get new_session_url, params: { redirect_url: users_url }
     assert_response :no_content
 
-    post redirects_session_url
+    post sessions_redirects_url
     assert_redirected_to users_url
   end
 end
