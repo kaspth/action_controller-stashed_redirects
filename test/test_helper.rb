@@ -32,7 +32,8 @@ Rails.application.routes.draw do
 end
 
 class ActionDispatch::IntegrationTest
-  def default_url_options
-    { host: "example.com" }
+  def before_setup
+    @routes = Rails.application.routes
+    super
   end
 end
