@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "active_support"
 require_relative "stashed_redirects/version"
 
 # Pass between different controller flows via stashed redirects
