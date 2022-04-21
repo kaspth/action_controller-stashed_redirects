@@ -1,7 +1,11 @@
-class SessionsController < ActionController::Base
+class ApplicationController < ActionController::Base
+end
+
+class SessionsController < ApplicationController
   stash_redirect_for :sign_in, on: :new
 
   def new
+    head :no_content
   end
 
   def create
@@ -9,5 +13,5 @@ class SessionsController < ActionController::Base
   end
 end
 
-class UsersController < ActionController::Base
+class UsersController < ApplicationController
 end
