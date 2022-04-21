@@ -29,7 +29,7 @@ module ActionController::StashedRedirects
   #   stash_redirect_for :sign_in, from: :param   # Only derive the redirect URL from `params[:redirect_url]`.
   #   stash_redirect_for :sign_in, from: :referer # Only derive the redirect URL from `request.referer`.
   def stash_redirect_for(purpose, from: nil)
-    if url = derive_stash_redirect_url(from)
+    if url = derive_stash_redirect_url_from(from)
       session[KEY_GENERATOR.(purpose)] = url
     else
       raise ArgumentError, "missing a redirect_url to stash, pass one via from: or via a redirect_url URL param"
