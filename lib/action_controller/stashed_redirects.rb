@@ -12,11 +12,10 @@ module ActionController::StashedRedirects
     # Adds a before_action to stash a redirect for a given `on:` action.
     #
     #   stash_redirect_for :sudo_authentication, on: :new
-    #
-    #   Override the default logic to only allow the referer:
-    #   stash_redirect_for :sudo_authentication, -> { request.referer }, on: :new
-    def stash_redirect_for(purpose, from = nil, on:)
-      before_action(-> { stash_redirect_for(purpose, from ? instance_exec(&from) : nil) }, only: on)
+    #   stash_redirect_for :sign_in, from: :referer, on: :new
+    #   stash_redirect_for :sign_in, from: -> { update_post_path(@post) }
+    def stash_redirect_for(purpose, on:, from: nil)
+      before_action(-> { stash_redirect_for(purpose, from: from.respond_to?(:call) ? instance_exec(&from) : from) }, only: on)
     end
   end
 
@@ -29,7 +28,7 @@ module ActionController::StashedRedirects
   #   stash_redirect_for :sign_in, from: url_from(params[:redirect_url]) || root_url
   #   stash_redirect_for :sign_in, from: :param   # Only derive the redirect URL from `params[:redirect_url]`.
   #   stash_redirect_for :sign_in, from: :referer # Only derive the redirect URL from `request.referer`.
-  def stash_redirect_for(purpose, from: %i[ param referer ])
+  def stash_redirect_for(purpose, from: nil)
     if url = derive_stash_redirect_url(from)
       session[KEY_GENERATOR.(purpose)] = url
     else
@@ -67,6 +66,7 @@ module ActionController::StashedRedirects
     end
 
     def derive_stash_redirect_url_from(from)
+      from ||= %i[ param referer ]
       { param: params[:redirect_url], referer: request.get? && request.referer }.values_at(*from).find(&:present?) || from
     end
 end
