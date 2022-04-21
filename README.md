@@ -1,8 +1,41 @@
 # ActionController::StashedRedirects
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/action_controller/stashed_redirects`. To experiment with that code, run `bin/console` for an interactive prompt.
+Pass between different controller flows via stashed redirects
 
-TODO: Delete this and the text above, and describe your gem
+Stash a redirect to execute a controller flow within another and return to the original flow later.
+
+## Usage
+
+```ruby
+class ApplicationController < ActionController::Base
+  before_action :authenticate
+
+  private
+    def authenticate
+      redirect_to new_session_url unless Current.user
+    end
+end
+
+class SessionsController < ApplicationController
+  # Stash a redirect at the start of the session authentication flow,
+  # from either params[:redirect_url] or request.referer in that order.
+  stash_redirect_for :sign_in, on: :new
+
+  def new
+  end
+
+  def create
+    if User.authenticate_by(session_params)
+      # On success, redirect the user back to where they first tried to access before being authenticated.
+      redirect_from_stashed :sign_in
+    end
+  end
+end
+```
+
+See the internal documentation for more usage information.
+
+Only internal redirects are allowed, so attackers can't pass an external `redirect_url`.
 
 ## Installation
 
@@ -13,10 +46,6 @@ Install the gem and add to the application's Gemfile by executing:
 If bundler is not being used to manage dependencies, install the gem by executing:
 
     $ gem install action_controller-stashed_redirects
-
-## Usage
-
-TODO: Write usage instructions here
 
 ## Development
 
