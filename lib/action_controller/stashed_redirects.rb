@@ -56,7 +56,7 @@ module ActionController::StashedRedirects
   end
 
   private
-    KEY_GENERATOR = ->(purpose) { "__url_stash_#{purpose.hash}" } # Use hash to allow for longer names, but don't take up needless storage.
+    KEY_GENERATOR = ->(purpose) { "__url_stash_#{purpose}" }
     private_constant :KEY_GENERATOR
 
     def stashed_redirect_url_for(purpose)
