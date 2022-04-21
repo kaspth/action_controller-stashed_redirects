@@ -24,11 +24,16 @@ module ActionController::StashedRedirects
   #
   # An explicit +redirect_url+ can be passsed, otherwise the redirect URL is
   # derived from `params[:redirect_url]` then falling back to `request.referer`.
-  def stash_redirect_for(purpose, redirect_url = nil)
-    if url = [ redirect_url, params[:redirect_url], request.referer ].find(&:present?)
+  #
+  #   stash_redirect_for :sign_in
+  #   stash_redirect_for :sign_in, from: url_from(params[:redirect_url]) || root_url
+  #   stash_redirect_for :sign_in, from: :param   # Only derive the redirect URL from `params[:redirect_url]`.
+  #   stash_redirect_for :sign_in, from: :referer # Only derive the redirect URL from `request.referer`.
+  def stash_redirect_for(purpose, from: %i[ param referer ])
+    if url = derive_stash_redirect_url(from)
       session[KEY_GENERATOR.(purpose)] = url
     else
-      raise ArgumentError, "missing a redirect_url to stash, pass one as the second argument or via a redirect_url URL param"
+      raise ArgumentError, "missing a redirect_url to stash, pass one via from: or via a redirect_url URL param"
     end
   end
 
@@ -59,5 +64,9 @@ module ActionController::StashedRedirects
         unless redirect_url = discard_stashed_redirect_for(purpose)
 
       url_from(redirect_url)
+    end
+
+    def derive_stash_redirect_url_from(from)
+      { param: params[:redirect_url], referer: request.get? && request.referer }.values_at(*from).find(&:present?) || from
     end
 end
