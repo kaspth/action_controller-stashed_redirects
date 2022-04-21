@@ -34,6 +34,7 @@ GEM
     loofah (2.16.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
+    method_source (1.0.0)
     minitest (5.15.0)
     nokogiri (1.13.4-aarch64-linux)
       racc (~> 1.4)
@@ -52,9 +53,18 @@ GEM
       nokogiri (>= 1.6)
     rails-html-sanitizer (1.4.2)
       loofah (~> 2.3)
+    railties (7.0.2.3)
+      actionpack (= 7.0.2.3)
+      activesupport (= 7.0.2.3)
+      method_source
+      rake (>= 12.2)
+      thor (~> 1.0)
+      zeitwerk (~> 2.5)
     rake (13.0.6)
+    thor (1.2.1)
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
+    zeitwerk (2.5.4)
 
 PLATFORMS
   arm64-darwin-20
@@ -63,6 +73,7 @@ PLATFORMS
 DEPENDENCIES
   action_controller-stashed_redirects!
   minitest (~> 5.0)
+  railties
   rake (~> 13.0)
 
 BUNDLED WITH
