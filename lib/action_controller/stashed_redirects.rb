@@ -39,7 +39,7 @@ module ActionController::StashedRedirects
 
   # Finds and deletes the redirect stashed in `session` under the given +purpose+, then redirects.
   #
-  #   redirect_from_stashed :login
+  #   redirect_from_stashed :sign_in
   #
   # Raises if no stashed redirect is found under the given +purpose+.
   #
@@ -50,7 +50,7 @@ module ActionController::StashedRedirects
 
   # Deletes the redirect stashed in the `session` under the given +purpose+ and returns it if any.
   #
-  #   discard_stashed_redirect_for :login # => the login redirect URL or nil.
+  #   discard_stashed_redirect_for :sign_in # => the sign_in redirect URL or nil.
   def discard_stashed_redirect_for(purpose)
     session.delete(KEY_GENERATOR.(purpose))
   end
