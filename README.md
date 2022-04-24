@@ -28,6 +28,8 @@ class SessionsController < ApplicationController
     if User.authenticate_by(session_params)
       # On success, redirect the user back to where they first tried to access before being authenticated.
       redirect_from_stashed :sign_in
+    else
+      render :new, status: :unprocessable_entity
     end
   end
 end
