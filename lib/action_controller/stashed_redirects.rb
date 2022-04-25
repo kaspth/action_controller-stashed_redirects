@@ -10,11 +10,12 @@ module ActionController::StashedRedirects
   extend ActiveSupport::Concern
 
   class_methods do
-    # Adds a before_action to stash a redirect for a given `on:` action.
+    # Adds a `before_action` to stash a redirect in a given `on:` action.
     #
-    #   stash_redirect_for :sudo_authentication, on: :new
-    #   stash_redirect_for :sign_in, from: :referer, on: :new
-    #   stash_redirect_for :sign_in, from: -> { update_post_path(@post) }
+    #   stash_redirect_for :sign_in, on: :new
+    #   stash_redirect_for :sign_in, on: %i[ new edit ]
+    #   stash_redirect_for :sign_in, on: :new, from: :referer
+    #   stash_redirect_for :sign_in, on: :new, from: -> { update_post_path(@post) }
     def stash_redirect_for(purpose, on:, from: nil)
       before_action(-> { stash_redirect_for(purpose, from: from.respond_to?(:call) ? instance_exec(&from) : from) }, only: on)
     end
@@ -22,8 +23,8 @@ module ActionController::StashedRedirects
 
   # Stashes a redirect URL in the `session` under the given +purpose+.
   #
-  # An explicit +redirect_url+ can be passsed, otherwise the redirect URL is
-  # derived from `params[:redirect_url]` then falling back to `request.referer`.
+  # An explicit +redirect_url+ can be passed in `from:`, otherwise the redirect URL is
+  # derived from `params[:redirect_url]` then falling back to `request.referer` on GET requests.
   #
   #   stash_redirect_for :sign_in
   #   stash_redirect_for :sign_in, from: url_from(params[:redirect_url]) || root_url
@@ -48,7 +49,7 @@ module ActionController::StashedRedirects
     redirect_to stashed_redirect_url_for(purpose)
   end
 
-  # Deletes the redirect stashed in the `session` under the given +purpose+ and returns it if any.
+  # Deletes and returns the redirect stashed in the `session` under the given +purpose+ if any.
   #
   #   discard_stashed_redirect_for :sign_in # => the sign_in redirect URL or nil.
   def discard_stashed_redirect_for(purpose)
