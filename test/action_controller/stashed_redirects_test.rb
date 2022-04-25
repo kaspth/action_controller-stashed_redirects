@@ -72,4 +72,13 @@ class ActionController::StashedRedirects::HooksTest < ActiveSupport::TestCase
     stash_redirect_for :sign_in, from: "/users/explicit"
     assert_equal "/users/explicit", redirect_from_stashed(:sign_in)
   end
+
+  test "no stashed redirect raises" do
+    error = assert_raises ActionController::StashedRedirects::MissingRedirectError do
+      redirect_from_stashed :sign_in
+    end
+
+    assert_equal :sign_in, error.purpose
+    assert_match "can't extract a stashed redirect_url to redirect_to", error.message
+  end
 end

@@ -9,6 +9,17 @@ require_relative "stashed_redirects/version"
 module ActionController::StashedRedirects
   extend ActiveSupport::Concern
 
+  class Error < StandardError; end
+
+  class MissingRedirectError < Error
+    attr_reader :purpose
+
+    def initialize(purpose)
+      super "can't extract a stashed redirect_url to redirect_to"
+      @purpose = purpose
+    end
+  end
+
   class_methods do
     # Adds a `before_action` to stash a redirect in a given `on:` action.
     #
@@ -61,10 +72,11 @@ module ActionController::StashedRedirects
     private_constant :KEY_GENERATOR
 
     def stashed_redirect_url_for(purpose)
-      raise ArgumentError, "can't extract a stashed redirect_url from session, none found" \
-        unless redirect_url = discard_stashed_redirect_for(purpose)
-
-      url_from(redirect_url)
+      if redirect_url = discard_stashed_redirect_for(purpose)
+        url_from(redirect_url)
+      else
+        raise MissingRedirectError, purpose
+      end
     end
 
     def derive_stash_redirect_url_from(from)
