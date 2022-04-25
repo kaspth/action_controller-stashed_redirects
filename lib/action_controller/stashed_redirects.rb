@@ -81,7 +81,9 @@ module ActionController::StashedRedirects
 
     def derive_stash_redirect_url_from(from)
       from ||= %i[ param referer ]
-      { param: params[:redirect_url], referer: request.get? && request.referer }.values_at(*from).find(&:present?) || from
+      possible_urls = { param: params[:redirect_url], referer: request.get? && request.referer }
+
+      url_from(possible_urls.values_at(*from).find(&:present?) || from)
     end
 end
 

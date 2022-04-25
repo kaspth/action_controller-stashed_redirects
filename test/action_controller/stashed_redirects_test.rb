@@ -31,6 +31,11 @@ class ActionController::StashedRedirectsTest < ActionDispatch::IntegrationTest
     post sessions_redirects_url
     assert_redirected_to users_url
   end
+
+  test "passing a non-existent redirect_url on action that expects it raises" do
+    get new_session_url
+    assert_response :internal_server_error
+  end
 end
 
 class ActionController::StashedRedirects::HooksTest < ActiveSupport::TestCase
@@ -44,11 +49,16 @@ class ActionController::StashedRedirects::HooksTest < ActiveSupport::TestCase
     end
 
     def request
-      @request ||= Struct.new(:referer) { def get? = true }.new "/users/referer"
+      @request ||= Struct.new(:host, :referer) { def get? = true }.new "http://example.com", "/users/referer"
     end
 
     def redirect_to(url, *) = url
-    def url_from(url) = url
+
+    def url_from(url)
+      if url.present?
+        ActionController::Redirecting.instance_method(:_url_host_allowed?).bind_call(self, url)
+      end
+    end
   end
 
   include Context, ActionController::StashedRedirects
@@ -71,6 +81,11 @@ class ActionController::StashedRedirects::HooksTest < ActiveSupport::TestCase
   test "explicit url override" do
     stash_redirect_for :sign_in, from: "/users/explicit"
     assert_equal "/users/explicit", redirect_from_stashed(:sign_in)
+  end
+
+  test "passing the wrong URL raises" do
+    assert_raises(ArgumentError) { stash_redirect_for :sign_in, from: nil }
+    assert_raises(ArgumentError) { stash_redirect_for :sign_in, from: "http://google.com" }
   end
 
   test "no stashed redirect raises" do
