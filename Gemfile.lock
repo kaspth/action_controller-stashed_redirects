@@ -42,6 +42,8 @@ GEM
       nokogiri (>= 1.5.9)
     method_source (1.0.0)
     minitest (5.15.0)
+    minitest-sprint (1.2.1)
+      path_expander (~> 1.1)
     nokogiri (1.13.4-aarch64-linux)
       racc (~> 1.4)
     nokogiri (1.13.4-arm64-darwin)
@@ -50,6 +52,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.13.4-x86_64-linux)
       racc (~> 1.4)
+    path_expander (1.1.0)
     racc (1.6.0)
     rack (2.2.3)
     rack-test (1.1.0)
@@ -82,6 +85,7 @@ DEPENDENCIES
   action_controller-stashed_redirects!
   debug
   minitest (~> 5.0)
+  minitest-sprint
   railties
   rake (~> 13.0)
 
