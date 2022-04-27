@@ -25,4 +25,4 @@ jobs:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
     - name: Run tests
-      run: minitest
+      run: bundle exec minitest
