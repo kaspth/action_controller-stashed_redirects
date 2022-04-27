@@ -56,7 +56,7 @@ class ActionController::StashedRedirects::HooksTest < ActiveSupport::TestCase
 
     def url_from(url)
       if url.present?
-        ActionController::Redirecting.instance_method(:_url_host_allowed?).bind_call(self, url)
+        url if URI(url.to_s).host.then { _1.nil? || _1 == request.host }
       end
     end
   end

@@ -27,7 +27,7 @@ module ActionController::StashedRedirects
     #   stash_redirect_for :sign_in, on: %i[ new edit ]
     #   stash_redirect_for :sign_in, on: :new, from: :referer
     #   stash_redirect_for :sign_in, on: :new, from: -> { update_post_path(@post) }
-    def stash_redirect_for(purpose, on:, from: nil)
+    def stash_redirect_for(purpose, on:, from: DEFAULT_FROM)
       before_action(-> { stash_redirect_for(purpose, from: from.respond_to?(:call) ? instance_exec(&from) : from) }, only: on)
     end
   end
@@ -41,7 +41,7 @@ module ActionController::StashedRedirects
   #   stash_redirect_for :sign_in, from: url_from(params[:redirect_url]) || root_url
   #   stash_redirect_for :sign_in, from: :param   # Only derive the redirect URL from `params[:redirect_url]`.
   #   stash_redirect_for :sign_in, from: :referer # Only derive the redirect URL from `request.referer`.
-  def stash_redirect_for(purpose, from: nil)
+  def stash_redirect_for(purpose, from: DEFAULT_FROM)
     if url = derive_stash_redirect_url_from(from)
       session[KEY_GENERATOR.(purpose)] = url
     else
@@ -68,6 +68,8 @@ module ActionController::StashedRedirects
   end
 
   private
+    DEFAULT_FROM = Object.new
+
     KEY_GENERATOR = ->(purpose) { "__url_stash_#{purpose}" }
     private_constant :KEY_GENERATOR
 
@@ -80,7 +82,7 @@ module ActionController::StashedRedirects
     end
 
     def derive_stash_redirect_url_from(from)
-      from ||= %i[ param referer ]
+      from = %i[ param referer ] if from == DEFAULT_FROM
       possible_urls = { param: params[:redirect_url], referer: request.get? && request.referer }
 
       url_from(possible_urls.values_at(*from).find(&:present?) || from)
