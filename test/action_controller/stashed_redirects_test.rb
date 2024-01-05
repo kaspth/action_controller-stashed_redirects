@@ -3,6 +3,10 @@
 require "test_helper"
 
 class ActionController::StashedRedirectsTest < ActionDispatch::IntegrationTest
+  test "version" do
+    assert ActionController::StashedRedirects::VERSION
+  end
+
   test "stash and recall redirect from a param" do
     get new_session_url, params: { redirect_url: users_url }
     assert_response :no_content

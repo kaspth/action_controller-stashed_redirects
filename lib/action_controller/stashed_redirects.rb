@@ -1,13 +1,14 @@
 # frozen_string_literal: true
 
 require "active_support"
-require_relative "stashed_redirects/version"
 
 # Pass between different controller flows via stashed redirects
 #
 # Stash a redirect to execute a controller flow within another and return to the original flow later.
 module ActionController::StashedRedirects
   extend ActiveSupport::Concern
+
+  autoload :VERSION, "action_controller/stashed_redirects/version"
 
   class Error < StandardError; end
 
