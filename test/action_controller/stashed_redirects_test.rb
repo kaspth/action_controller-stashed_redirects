@@ -56,7 +56,7 @@ class ActionController::StashedRedirects::HooksTest < ActiveSupport::TestCase
   end
 
   test "passing the wrong URL raises" do
-    assert_raises(ArgumentError) { stash_redirect_for :sign_in, url: nil }
+    assert_raises(ArgumentError) { stash_redirect_for :sign_in, url: -> { nil } }
     assert_raises(ArgumentError) { stash_redirect_for :sign_in, url: "http://google.com" }
   end
 
