@@ -73,6 +73,14 @@ module ActionController::StashedRedirects
     KEY_GENERATOR = ->(purpose) { "__url_stash_#{purpose}" }
     private_constant :KEY_GENERATOR
 
+    # Looks up a redirect URL from `params[:redirect_url]` using
+    # `url_from` as the protection mechanism to ensure it's a valid internal redirect.
+    #
+    # Can be passed to `redirect_to` with a fallback:
+    #
+    #   redirect_to redirect_url || users_url
+    def redirect_url = url_from(params[:redirect_url])
+
     def stashed_redirect_url_for(purpose)
       if redirect_url = discard_stashed_redirect_for(purpose)
         url_from(redirect_url)
