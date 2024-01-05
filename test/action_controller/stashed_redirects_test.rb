@@ -15,15 +15,7 @@ class ActionController::StashedRedirectsTest < ActionDispatch::IntegrationTest
     assert_redirected_to users_url
   end
 
-  test "stash and recall redirect from the referer" do
-    get new_session_url, headers: { HTTP_REFERER: users_url }
-    assert_response :no_content
-
-    post sessions_url
-    assert_redirected_to users_url
-  end
-
-  test "passing from: block accesses instance context" do
+  test "passing url: block accesses instance context" do
     delete session_url(id: 1)
     assert_redirected_to users_url
   end
@@ -44,52 +36,28 @@ end
 
 class ActionController::StashedRedirects::HooksTest < ActiveSupport::TestCase
   module Context
-    def session
-      @session ||= {}
-    end
-
-    def params
-      @params ||= { redirect_url: "/users/param" }
-    end
-
-    def request
-      @request ||= Struct.new(:host, :referer) { def get? = true }.new "http://example.com", "/users/referer"
-    end
+    def request = @request ||= Struct.new(:host).new("http://example.com")
+    def session = @session ||= {}
+    def params  = { redirect_url: "/users/param" }
 
     def redirect_to(url, *) = url
-
-    def url_from(url)
-      if url.present?
-        url if URI(url.to_s).host.then { _1.nil? || _1 == request.host }
-      end
-    end
+    def url_from(url) = URI(url.to_s).host.then { _1.nil? || _1 == request.host } && url
   end
-
   include Context, ActionController::StashedRedirects
 
-  test "param takes precedence over referer" do
+  test "from redirect_url" do
     stash_redirect_for :sign_in
     assert_equal "/users/param", redirect_from_stashed(:sign_in)
   end
 
-  test "from param" do
-    stash_redirect_for :sign_in, from: :param
-    assert_equal "/users/param", redirect_from_stashed(:sign_in)
-  end
-
-  test "from referer" do
-    stash_redirect_for :sign_in, from: :referer
-    assert_equal "/users/referer", redirect_from_stashed(:sign_in)
-  end
-
   test "explicit url override" do
-    stash_redirect_for :sign_in, from: "/users/explicit"
+    stash_redirect_for :sign_in, url: "/users/explicit"
     assert_equal "/users/explicit", redirect_from_stashed(:sign_in)
   end
 
   test "passing the wrong URL raises" do
-    assert_raises(ArgumentError) { stash_redirect_for :sign_in, from: nil }
-    assert_raises(ArgumentError) { stash_redirect_for :sign_in, from: "http://google.com" }
+    assert_raises(ArgumentError) { stash_redirect_for :sign_in, url: -> { nil } }
+    assert_raises(ArgumentError) { stash_redirect_for :sign_in, url: "http://google.com" }
   end
 
   test "no stashed redirect raises" do

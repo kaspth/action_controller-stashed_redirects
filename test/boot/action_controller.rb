@@ -4,7 +4,7 @@ end
 
 class SessionsController < ApplicationController
   stash_redirect_for :sign_in,  on: :new
-  stash_redirect_for :sign_out, on: :destroy, from: -> { users_url }
+  stash_redirect_for :sign_out, on: :destroy, url: :users_url
 
   def new
     head :no_content

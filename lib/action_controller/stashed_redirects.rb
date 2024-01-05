@@ -29,10 +29,9 @@ module ActionController::StashedRedirects
     #
     #   stash_redirect_for :sign_in, on: :new
     #   stash_redirect_for :sign_in, on: %i[ new edit ]
-    #   stash_redirect_for :sign_in, on: :new, from: :referer
-    #   stash_redirect_for :sign_in, on: :new, from: -> { update_post_path(@post) }
-    def stash_redirect_for(purpose, on:, from: DEFAULT_FROM)
-      before_action(-> { stash_redirect_for(purpose, from: from.respond_to?(:call) ? instance_exec(&from) : from) }, only: on)
+    #   stash_redirect_for :sign_in, on: :new, url: -> { update_post_path(@post) }
+    def stash_redirect_for(purpose, on:, url: DEFAULT_URL)
+      before_action(-> { stash_redirect_for(purpose, url: url) }, only: on)
     end
   end
 
@@ -46,8 +45,8 @@ module ActionController::StashedRedirects
     #   stash_redirect_for :sign_in, from: url_from(params[:redirect_url]) || root_url
     #   stash_redirect_for :sign_in, from: :param   # Only derive the redirect URL from `params[:redirect_url]`.
     #   stash_redirect_for :sign_in, from: :referer # Only derive the redirect URL from `request.referer`.
-    def stash_redirect_for(purpose, from: DEFAULT_FROM)
-      if url = derive_stash_redirect_url_from(from)
+    def stash_redirect_for(purpose, url: DEFAULT_URL)
+      if url = derive_stash_redirect_url_from(url)
         session[KEY_GENERATOR.(purpose)] = url
       else
         raise ArgumentError, "missing a redirect_url to stash, pass one via from: or via a redirect_url URL param"
@@ -76,11 +75,12 @@ module ActionController::StashedRedirects
       url_from(discard_stashed_redirect_for(purpose)) or raise MissingRedirectError, purpose
     end
 
-    def derive_stash_redirect_url_from(from)
-      from = %i[ param referer ] if from == DEFAULT_FROM
-      possible_urls = { param: params[:redirect_url], referer: request.get? && request.referer }
-
-      url_from(possible_urls.values_at(*from).find(&:present?) || from)
+    def derive_stash_redirect_url_from(url)
+      case url
+      when DEFAULT_URL  then redirect_url
+      when String       then url_from url
+      when Symbol, Proc then url_from instance_exec(self, &url)
+      end
     end
 
     # Looks up a redirect URL from `params[:redirect_url]` using
@@ -91,7 +91,7 @@ module ActionController::StashedRedirects
     #   redirect_to redirect_url || users_url
     def redirect_url = url_from(params[:redirect_url])
 
-    DEFAULT_FROM = Object.new
+    DEFAULT_URL = Object.new
 
     KEY_GENERATOR = ->(purpose) { "__url_stash_#{purpose}" }
     private_constant :KEY_GENERATOR
