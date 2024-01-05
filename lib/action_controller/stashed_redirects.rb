@@ -5,44 +5,6 @@ require "active_support"
 # Pass between different controller flows via stashed redirects
 #
 # Stash a redirect to execute a controller flow within another and return to the original flow later.
-#
-# Consider a flow where you want to require super-user, or sudo, privileges for a given action, e.g. type in your password before you can change your credit card.
-#
-# You would annotate the
-#
-#   class Billing::CreditCardsController < ApplicationController
-#     before_action :require_sudo, only: %i[ edit update ]
-#
-#     def edit
-#     end
-#
-#     def update
-#       Current.user.billing.credit_cards.find(params[:id]).update!(credit_card_params)
-#     end
-#
-#     private
-#       def require_sudo
-#         redirect_to sudo_authentications_url unless Current.user.sudo?
-#       end
-#   end
-#
-#   class Sudo::AuthenticationsController < ApplicationController
-#     # Stashes a redirect at the start of this controller flow,
-#     # derived from `params[:redirect_url] || request.referer`, to be redirected to once this flow is over.
-#     stash_redirect_for :sudo_authentication, on: :new
-#
-#     def new
-#     end
-#
-#     def create
-#       if Current.user.authenticate(params[:password])
-#         # Recalls and clears the stashed redirect URL then performs the redirect.
-#         redirect_from_stashed :sudo_authentication
-#       else
-#         render :new, status: :unprocessable_entity
-#       end
-#     end
-#   end
 module ActionController::StashedRedirects
   extend ActiveSupport::Concern
 

@@ -40,6 +40,108 @@ See the internal documentation for more usage information.
 
 Only internal redirects are allowed, so attackers can't pass an external `redirect_url`.
 
+### Making a sudo authentication system
+
+Consider a flow where you want to require super-user, or sudo, privileges for a given action, e.g. type in your password before you can change your credit card.
+
+We'll make a `require_sudo` API that we can annotate our controller with like this:
+
+```ruby
+class Billing::CreditCardsController < ApplicationController
+  require_sudo # Require sudo on all actions in this controller.
+  # require_sudo_on :edit, :update # Or just for some actions.
+
+  def edit
+  end
+
+  def update
+    Current.user.billing.credit_cards.find(params[:id]).update!(credit_card_params)
+  end
+end
+```
+
+`require_sudo` or `require_sudo_on` can come from a controller concern like this:
+
+```ruby
+# app/controllers/concerns/sudo/examination.rb
+module Sudo::Examination
+  extend ActiveSupport::Concern
+
+  class_methods do
+    def require_sudo_on(*actions, **options) = require_sudo(only: *actions, **options)
+    def require_sudo(...) = before_action(:require_sudo, ...)
+  end
+
+  private
+    def require_sudo
+      if sudo.reexamination_needed?
+        raise "Non-get: can't redirect back here, make sure you do …something with an interstitial page?" unless request.get?
+        redirect_to new_sudo_authentications_url(redirect_url: request.original_url)
+      end
+    end
+
+    def sudo = Sudo.new(session)
+end
+
+# Which we include in ApplicationController:
+class ApplicationController < ActionController::Base
+  include Sudo::Examination
+end
+```
+
+Notice how in `redirect_to new_sudo_authentications_url(redirect_url: request.original_url)` we're passing the `redirect_url:` along that `ActionController::StashedRedirects` will need.
+It's pointing back to the page we're on, which required sudo authentication, so we can redirect back to it after the sudo exam has been passed.
+
+Next up, we can add an in-memory PORO model to give the behavior some better names:
+
+```ruby
+# app/models/sudo.rb
+class Sudo < Data.define(:store)
+  def passed!
+    store[:sudo_expires_at] = 15.minutes.from_now
+  end
+
+  def reexamination_needed?
+    expires_at = store[:sudo_expires_at]
+    expires_at.nil? || Time.parse(expires_at).past?
+  end
+end
+```
+
+Finally, we can add the authenticating sudo controller itself, where `stash_redirect_for` will use the `redirect_url:` from earlier:
+
+```ruby
+# app/controllers/sudo/authentications_controller.rb
+class Sudo::AuthenticationsController < ApplicationController
+  stash_redirect_for :sudo, on: :new
+
+  def new
+  end
+
+  def create
+    if pass_sudo_exam?
+      @sudo.passed!
+      redirect_from_stashed :sudo
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+
+  private
+    def pass_sudo_exam?
+      Current.user.authenticate_password(params[:password])
+    end
+end
+
+# config/routes.rb
+namespace :sudo do
+  resources :authentications
+end
+```
+
+Users can now fill-in their password, which will hit `sudo/authentications#create` and redirect them back to the edit form on the
+credit cards flow if it's the correct password.
+
 ## Installation
 
 Install the gem and add to the application's Gemfile by executing:
