@@ -32,46 +32,41 @@ module ActionController::StashedRedirects
     end
   end
 
-  # Stashes a redirect URL in the `session` under the given +purpose+.
-  #
-  # An explicit +redirect_url+ can be passed in `from:`, otherwise the redirect URL is
-  # derived from `params[:redirect_url]` then falling back to `request.referer` on GET requests.
-  #
-  #   stash_redirect_for :sign_in
-  #   stash_redirect_for :sign_in, from: url_from(params[:redirect_url]) || root_url
-  #   stash_redirect_for :sign_in, from: :param   # Only derive the redirect URL from `params[:redirect_url]`.
-  #   stash_redirect_for :sign_in, from: :referer # Only derive the redirect URL from `request.referer`.
-  def stash_redirect_for(purpose, from: DEFAULT_FROM)
-    if url = derive_stash_redirect_url_from(from)
-      session[KEY_GENERATOR.(purpose)] = url
-    else
-      raise ArgumentError, "missing a redirect_url to stash, pass one via from: or via a redirect_url URL param"
-    end
-  end
-
-  # Finds and deletes the redirect stashed in `session` under the given +purpose+, then redirects.
-  #
-  #   redirect_from_stashed :sign_in
-  #
-  # Raises if no stashed redirect is found under the given +purpose+.
-  #
-  # Relies on +redirect_to+'s open redirect protection, see it's documentation for more.
-  def redirect_from_stashed(purpose)
-    redirect_to stashed_redirect_url_for(purpose)
-  end
-
-  # Deletes and returns the redirect stashed in the `session` under the given +purpose+ if any.
-  #
-  #   discard_stashed_redirect_for :sign_in # => the sign_in redirect URL or nil.
-  def discard_stashed_redirect_for(purpose)
-    session.delete(KEY_GENERATOR.(purpose))
-  end
-
   private
-    DEFAULT_FROM = Object.new
+    # Stashes a redirect URL in the `session` under the given +purpose+.
+    #
+    # An explicit +redirect_url+ can be passed in `from:`, otherwise the redirect URL is
+    # derived from `params[:redirect_url]` then falling back to `request.referer` on GET requests.
+    #
+    #   stash_redirect_for :sign_in
+    #   stash_redirect_for :sign_in, from: url_from(params[:redirect_url]) || root_url
+    #   stash_redirect_for :sign_in, from: :param   # Only derive the redirect URL from `params[:redirect_url]`.
+    #   stash_redirect_for :sign_in, from: :referer # Only derive the redirect URL from `request.referer`.
+    def stash_redirect_for(purpose, from: DEFAULT_FROM)
+      if url = derive_stash_redirect_url_from(from)
+        session[KEY_GENERATOR.(purpose)] = url
+      else
+        raise ArgumentError, "missing a redirect_url to stash, pass one via from: or via a redirect_url URL param"
+      end
+    end
 
-    KEY_GENERATOR = ->(purpose) { "__url_stash_#{purpose}" }
-    private_constant :KEY_GENERATOR
+    # Finds and deletes the redirect stashed in `session` under the given +purpose+, then redirects.
+    #
+    #   redirect_from_stashed :sign_in
+    #
+    # Raises if no stashed redirect is found under the given +purpose+.
+    #
+    # Relies on +redirect_to+'s open redirect protection, see it's documentation for more.
+    def redirect_from_stashed(purpose)
+      redirect_to stashed_redirect_url_for(purpose)
+    end
+
+    # Deletes and returns the redirect stashed in the `session` under the given +purpose+ if any.
+    #
+    #   discard_stashed_redirect_for :sign_in # => the sign_in redirect URL or nil.
+    def discard_stashed_redirect_for(purpose)
+      session.delete(KEY_GENERATOR.(purpose))
+    end
 
     # Looks up a redirect URL from `params[:redirect_url]` using
     # `url_from` as the protection mechanism to ensure it's a valid internal redirect.
@@ -95,6 +90,11 @@ module ActionController::StashedRedirects
 
       url_from(possible_urls.values_at(*from).find(&:present?) || from)
     end
+
+    DEFAULT_FROM = Object.new
+
+    KEY_GENERATOR = ->(purpose) { "__url_stash_#{purpose}" }
+    private_constant :KEY_GENERATOR
 end
 
 ActiveSupport.on_load(:action_controller) { include ActionController::StashedRedirects }
