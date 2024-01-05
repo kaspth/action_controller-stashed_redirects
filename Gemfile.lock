@@ -55,8 +55,6 @@ GEM
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
     minitest (5.20.0)
-    minitest-sprint (1.2.2)
-      path_expander (~> 1.1)
     mutex_m (0.2.0)
     nokogiri (1.16.0-aarch64-linux)
       racc (~> 1.4)
@@ -68,7 +66,6 @@ GEM
       racc (~> 1.4)
     nokogiri (1.16.0-x86_64-linux)
       racc (~> 1.4)
-    path_expander (1.1.1)
     psych (5.1.2)
       stringio
     racc (1.7.3)
@@ -116,8 +113,7 @@ PLATFORMS
 DEPENDENCIES
   action_controller-stashed_redirects!
   debug
-  minitest (~> 5.0)
-  minitest-sprint
+  minitest
   railties
   rake (~> 13.0)
 
