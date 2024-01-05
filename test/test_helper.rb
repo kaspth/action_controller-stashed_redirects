@@ -13,6 +13,8 @@ require "action_controller/railtie"
 ENV["RAILS_ENV"] = "test"
 
 class ActionController::StashedRedirects::Application < Rails::Application
+  config.load_defaults 7.1
+
   config.eager_load = false
   config.consider_all_requests_local = true
   # config.logger = Logger.new(STDOUT)
