@@ -36,27 +36,13 @@ end
 
 class ActionController::StashedRedirects::HooksTest < ActiveSupport::TestCase
   module Context
-    def session
-      @session ||= {}
-    end
-
-    def params
-      @params ||= { redirect_url: "/users/param" }
-    end
-
-    def request
-      @request ||= Struct.new(:host, :referer) { def get? = true }.new "http://example.com", "/users/referer"
-    end
+    def request = @request ||= Struct.new(:host).new("http://example.com")
+    def session = @session ||= {}
+    def params  = { redirect_url: "/users/param" }
 
     def redirect_to(url, *) = url
-
-    def url_from(url)
-      if url.present?
-        url if URI(url.to_s).host.then { _1.nil? || _1 == request.host }
-      end
-    end
+    def url_from(url) = URI(url.to_s).host.then { _1.nil? || _1 == request.host } && url
   end
-
   include Context, ActionController::StashedRedirects
 
   test "from redirect_url" do
