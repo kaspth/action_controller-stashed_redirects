@@ -72,14 +72,6 @@ module ActionController::StashedRedirects
       session.delete(KEY_GENERATOR.(purpose))
     end
 
-    # Looks up a redirect URL from `params[:redirect_url]` using
-    # `url_from` as the protection mechanism to ensure it's a valid internal redirect.
-    #
-    # Can be passed to `redirect_to` with a fallback:
-    #
-    #   redirect_to redirect_url || users_url
-    def redirect_url = url_from(params[:redirect_url])
-
     def stashed_redirect_url_for(purpose)
       url_from(discard_stashed_redirect_for(purpose)) or raise MissingRedirectError, purpose
     end
@@ -90,6 +82,14 @@ module ActionController::StashedRedirects
 
       url_from(possible_urls.values_at(*from).find(&:present?) || from)
     end
+
+    # Looks up a redirect URL from `params[:redirect_url]` using
+    # `url_from` as the protection mechanism to ensure it's a valid internal redirect.
+    #
+    # Can be passed to `redirect_to` with a fallback:
+    #
+    #   redirect_to redirect_url || users_url
+    def redirect_url = url_from(params[:redirect_url])
 
     DEFAULT_FROM = Object.new
 
