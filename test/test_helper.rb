@@ -15,7 +15,7 @@ ENV["RAILS_ENV"] = "test"
 class ActionController::StashedRedirects::Application < Rails::Application
   config.eager_load = false
   config.consider_all_requests_local = true
-  config.logger = Logger.new(STDOUT)
+  # config.logger = Logger.new(STDOUT)
 
   middleware.delete ActionDispatch::HostAuthorization
 end
