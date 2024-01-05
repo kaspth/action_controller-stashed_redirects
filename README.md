@@ -12,13 +12,14 @@ class ApplicationController < ActionController::Base
 
   private
     def authenticate
-      redirect_to new_session_url unless Current.user
+      # Pass `redirect_url:` to pass the URL we're currently on.
+      redirect_to new_session_url(redirect_url: request.url) unless Current.user
     end
 end
 
 class SessionsController < ApplicationController
   # Stash a redirect at the start of the session authentication flow,
-  # from either params[:redirect_url] or request.referer in that order.
+  # from `params[:redirect_url]` automatically.
   stash_redirect_for :sign_in, on: :new
 
   def new
