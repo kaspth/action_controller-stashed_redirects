@@ -10,9 +10,12 @@ module ActionController::StashedRedirects
 
   autoload :VERSION, "action_controller/stashed_redirects/version"
 
-  class Error < StandardError; end
+  # Allow a general `rescue ActionController::StashedRedirects::Error`.
+  Error = Module.new
 
-  class MissingRedirectError < Error
+  class MissingRedirectError < StandardError
+    include Error
+
     attr_reader :purpose
 
     def initialize(purpose)
