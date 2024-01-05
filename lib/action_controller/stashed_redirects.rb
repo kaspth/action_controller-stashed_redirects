@@ -81,11 +81,7 @@ module ActionController::StashedRedirects
     def redirect_url = url_from(params[:redirect_url])
 
     def stashed_redirect_url_for(purpose)
-      if redirect_url = discard_stashed_redirect_for(purpose)
-        url_from(redirect_url)
-      else
-        raise MissingRedirectError, purpose
-      end
+      url_from(discard_stashed_redirect_for(purpose)) or raise MissingRedirectError, purpose
     end
 
     def derive_stash_redirect_url_from(from)
