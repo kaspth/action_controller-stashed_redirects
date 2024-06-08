@@ -74,7 +74,7 @@ module Sudo::Examination
 
   private
     def require_sudo
-      if sudo.reexamination_needed?
+      if sudo.exam_needed?
         raise "Non-get: can't redirect back here, make sure you do …something with an interstitial page?" unless request.get?
         redirect_to new_sudo_authentications_url(redirect_url: request.url)
       end
@@ -101,7 +101,7 @@ class Sudo < Data.define(:store)
     store[:sudo_expires_at] = 15.minutes.from_now
   end
 
-  def reexamination_needed?
+  def exam_needed?
     expires_at = store[:sudo_expires_at]
     expires_at.nil? || Time.parse(expires_at).past?
   end
@@ -116,7 +116,7 @@ class Sudo::AuthenticationsController < ApplicationController
   stash_redirect_for :sudo, on: :new
 
   def new
-    redirect_from_stashed :sudo unless sudo.reexamination_needed?
+    redirect_from_stashed :sudo unless sudo.exam_needed?
   end
 
   def create
