@@ -120,17 +120,13 @@ class Sudo::AuthenticationsController < ApplicationController
 
   def create
     if pass_sudo_exam?
-      @sudo.passed!
+      sudo.passed!
       redirect_from_stashed :sudo
     else
       render :new, status: :unprocessable_entity
     end
   end
-
-  private
-    def pass_sudo_exam?
-      Current.user.authenticate_password(params[:password])
-    end
+  private def pass_sudo_exam? = Current.user.authenticate_password(params[:password])
 end
 
 # config/routes.rb
