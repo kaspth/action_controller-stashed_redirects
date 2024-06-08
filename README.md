@@ -116,6 +116,7 @@ class Sudo::AuthenticationsController < ApplicationController
   stash_redirect_for :sudo, on: :new
 
   def new
+    redirect_from_stashed :sudo unless sudo.reexamination_needed?
   end
 
   def create
