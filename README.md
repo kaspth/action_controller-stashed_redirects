@@ -76,7 +76,7 @@ module Sudo::Examination
     def require_sudo
       if sudo.reexamination_needed?
         raise "Non-get: can't redirect back here, make sure you do …something with an interstitial page?" unless request.get?
-        redirect_to new_sudo_authentications_url(redirect_url: request.original_url)
+        redirect_to new_sudo_authentications_url(redirect_url: request.url)
       end
     end
 
