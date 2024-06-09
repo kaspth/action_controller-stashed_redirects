@@ -68,7 +68,7 @@ module Sudo::Examination
   extend ActiveSupport::Concern
 
   class_methods do
-    def require_sudo_on(*actions, **options) = require_sudo(only: *actions, **options)
+    def require_sudo_on(*actions, **) = require_sudo(only: *actions, **)
     def require_sudo(...) = before_action(:require_sudo, ...)
   end
 
