@@ -87,7 +87,7 @@ class ApplicationController < ActionController::Base
 end
 ```
 
-Notice how in `redirect_to new_sudo_exams_url(redirect_url: request.original_url)` we're passing the `redirect_url:` along that `ActionController::StashedRedirects` will need.
+Notice how in `redirect_to new_sudo_exams_url(redirect_url: request.url)` we're passing the `redirect_url:` along that `ActionController::StashedRedirects` will need.
 It's pointing back to the page we're on, which required sudo authentication, so we can redirect back to it after the sudo exam has been passed.
 
 Next up, we can add an in-memory PORO model to give the behavior some better names:
