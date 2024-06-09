@@ -76,7 +76,7 @@ module Sudo::Examination
     def require_sudo
       if sudo.exam_needed?
         raise "Non-get: can't redirect back here, make sure you do …something with an interstitial page?" unless request.get?
-        redirect_to new_sudo_authentications_url(redirect_url: request.url)
+        redirect_to new_sudo_exams_url(redirect_url: request.url)
       end
     end
 
@@ -89,7 +89,7 @@ class ApplicationController < ActionController::Base
 end
 ```
 
-Notice how in `redirect_to new_sudo_authentications_url(redirect_url: request.original_url)` we're passing the `redirect_url:` along that `ActionController::StashedRedirects` will need.
+Notice how in `redirect_to new_sudo_exams_url(redirect_url: request.original_url)` we're passing the `redirect_url:` along that `ActionController::StashedRedirects` will need.
 It's pointing back to the page we're on, which required sudo authentication, so we can redirect back to it after the sudo exam has been passed.
 
 Next up, we can add an in-memory PORO model to give the behavior some better names:
@@ -111,8 +111,8 @@ end
 Finally, we can add the authenticating sudo controller itself, where `stash_redirect_for` will use the `redirect_url:` from earlier:
 
 ```ruby
-# app/controllers/sudo/authentications_controller.rb
-class Sudo::AuthenticationsController < ApplicationController
+# app/controllers/sudo/exams_controller.rb
+class Sudo::ExamsController < ApplicationController
   stash_redirect_for :sudo, on: :new
 
   def new
@@ -132,11 +132,11 @@ end
 
 # config/routes.rb
 namespace :sudo do
-  resources :authentications
+  resources :exams
 end
 ```
 
-Users can now fill-in their password, which will hit `sudo/authentications#create` and redirect them back to the edit form on the
+Users can now fill-in their password, which will hit `sudo/exams#create` and redirect them back to the edit form on the
 credit cards flow if it's the correct password.
 
 ## Installation
