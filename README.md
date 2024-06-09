@@ -65,9 +65,7 @@ end
 ```ruby
 # app/controllers/concerns/sudo/examination.rb
 module Sudo::Examination
-  extend ActiveSupport::Concern
-
-  class_methods do
+  def self.included(klass) = klass.singleton_class.class_eval do
     def require_sudo_on(*actions, **) = require_sudo(only: *actions, **)
     def require_sudo(...) = before_action(:require_sudo, ...)
   end
