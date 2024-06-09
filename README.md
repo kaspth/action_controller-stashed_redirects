@@ -108,7 +108,7 @@ class Sudo < Data.define(:store)
 end
 ```
 
-Finally, we can add the authenticating sudo controller itself, where `stash_redirect_for` will use the `redirect_url:` from earlier:
+Next, we can add the authenticating sudo controller itself, where `stash_redirect_for` will use the `redirect_url:` from earlier:
 
 ```ruby
 # app/controllers/sudo/exams_controller.rb
@@ -129,7 +129,11 @@ class Sudo::ExamsController < ApplicationController
   end
   private def pass_sudo_exam? = Current.user.authenticate_password(params[:password])
 end
+```
 
+Finally, we mount the routes for the controller:
+
+```ruby
 # config/routes.rb
 namespace :sudo do
   resources :exams
