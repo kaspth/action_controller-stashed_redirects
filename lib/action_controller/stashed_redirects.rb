@@ -83,12 +83,18 @@ module ActionController::StashedRedirects
       end
     end
 
+    # Syntactic sugar for redirecting to `redirect_url` with a fallback.
+    #
+    #   redirect_forward_or_to root_url # => redirect_to redirect_url || root_url
+    def redirect_forward_or_to(fallback_url)
+      redirect_to redirect_url || fallback_url
+    end
+
     # Looks up a redirect URL from `params[:redirect_url]` using
-    # `url_from` as the protection mechanism to ensure it's a valid internal redirect.
+    # Rails' `url_from` as the protection mechanism to ensure it's a valid internal redirect.
+    # See the `url_from` docs: https://api.rubyonrails.org/classes/ActionController/Redirecting.html#method-i-url_from
     #
-    # Can be passed to `redirect_to` with a fallback:
-    #
-    #   redirect_to redirect_url || users_url
+    # You probably want to use `redirect_forward_or_to`.
     def redirect_url = url_from(params[:redirect_url])
 
     DEFAULT_URL = Object.new

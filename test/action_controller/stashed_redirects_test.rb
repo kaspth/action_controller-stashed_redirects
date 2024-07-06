@@ -32,6 +32,14 @@ class ActionController::StashedRedirectsTest < ActionDispatch::IntegrationTest
     get new_session_url
     assert_response :internal_server_error
   end
+
+  test "redirect_forward_or_to" do
+    get forward_sessions_redirects_url, params: { redirect_url: users_url }
+    assert_redirected_to users_url
+
+    get forward_sessions_redirects_url
+    assert_redirected_to root_url
+  end
 end
 
 class ActionController::StashedRedirects::HooksTest < ActiveSupport::TestCase
