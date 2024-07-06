@@ -27,10 +27,14 @@ Rails.application.initialize!
 Rails.application.routes.draw do
   resources :sessions
   namespace :sessions do
-    resources :redirects
+    resources :redirects do
+      get :forward, on: :collection
+    end
   end
 
   resources :users
+
+  root to: "sessions#new"
 end
 
 require_relative "boot/action_controller"

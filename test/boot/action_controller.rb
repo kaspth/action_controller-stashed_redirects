@@ -24,5 +24,9 @@ module Sessions
     def create
       redirect_from_stashed :sign_in
     end
+
+    def forward
+      redirect_forward_or_to root_url
+    end
   end
 end
