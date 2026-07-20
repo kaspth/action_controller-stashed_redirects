@@ -1,6 +1,7 @@
 # ActionController::StashedRedirects
 
 [![Ruby Users Forum](https://img.shields.io/discourse/topics?server=https%3A%2F%2Fwww.rubyforum.org&style=flat&logo=discourse&label=Ruby%20Users%20Forum)](https://www.rubyforum.org/tag/action-controller-stashed-redirects/59)
+
 Pass between different controller flows via stashed redirects
 
 Stash a redirect to execute a controller flow within another and return to the original flow later.
