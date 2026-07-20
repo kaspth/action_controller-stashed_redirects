@@ -1,5 +1,6 @@
 # ActionController::StashedRedirects
 
+[![Ruby Users Forum](https://img.shields.io/discourse/topics?server=https%3A%2F%2Fwww.rubyforum.org&style=flat&logo=discourse&label=Ruby%20Users%20Forum)](https://www.rubyforum.org/tag/action-controller-stashed-redirects/59)
 Pass between different controller flows via stashed redirects
 
 Stash a redirect to execute a controller flow within another and return to the original flow later.
@@ -150,6 +151,10 @@ Install the gem and add to the application's Gemfile by executing:
 If bundler is not being used to manage dependencies, install the gem by executing:
 
     $ gem install action_controller-stashed_redirects
+
+## Community
+
+Join us in the `action_controller-stashed_redirects` tag on the [Ruby Users Forum](https://www.rubyforum.org/tag/action-controller-stashed-redirects/59), and the [Spinel Discord](https://discord.gg/u34TcumAk8).
 
 ## Development
 
